@@ -16,12 +16,24 @@ use yii\base\Component;
 use yii\base\InvalidConfigException;
 
 class Client extends Component {
+	/**
+	 * @var string url API endpoint
+	 */
 	public $service_url = "http://www.xmlsoccer.com/FootballData.asmx";
 
+	/**
+	 * @var string API key as shown on http://www.xmlsoccer.com/Account.aspx
+	 */
 	public $api_key;
 
+	/**
+	 * @var string optional the IP address of interface for originating requests
+	 */
 	public $request_ip;
 
+	/**
+	 * Time out to avoid misuse of service for specific calls
+	 */
 	const TIMEOUT_GetLiveScore = 25;
 	const TIMEOUT_GetLiveScoreByLeague = 25;
 	const TIMEOUT_GetOddsByFixtureMatchID = 3600;
@@ -37,15 +49,26 @@ class Client extends Component {
 	 * @throws Exception
 	 */
 	public function init() {
-		if (empty($this->request_ip)) {
-			$this->request_ip = gethostbyname( gethostname() );
-		}
 		if ( empty( $this->service_url ) ) {
 			throw new Exception( "service_url cannot be empty. Please configure." );
 		}
 		if ( empty( $this->api_key ) ) {
 			throw new Exception( "api_key cannot be empty. Please configure." );
 		}
+	}
+
+	/**
+	 * Set the IP address of specific interface to be used for API calls
+	 *
+	 * @param $ip
+	 *
+	 * @throws Exception
+	 */
+	public function setRequestIp( $ip ) {
+		if ( empty( $ip ) ) {
+			throw new Exception( "IP parameter cannot be empty.", E_USER_WARNING );
+		}
+		$this->request_ip = $ip;
 	}
 
 	/**
@@ -111,7 +134,9 @@ class Client extends Component {
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt( $curl, CURLOPT_TIMEOUT, self::TIMEOUT_CURL );
 		curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, self::TIMEOUT_CURL );
-		curl_setopt( $curl, CURLOPT_INTERFACE, $this->request_ip );
+		if ( !empty($this->request_ip) ) {
+			curl_setopt( $curl, CURLOPT_INTERFACE, $this->request_ip );
+		}
 		$data      = curl_exec( $curl );
 		$cerror    = curl_error( $curl );
 		$cerrno    = curl_errno( $curl );
@@ -126,12 +151,5 @@ class Client extends Component {
 			throw new Exception( "Wrong HTTP status code: $http_code - $data\nURL: $url" );
 		}
 		return $data;
-	}
-
-	public function setRequestIp( $ip ) {
-		if ( empty( $ip ) ) {
-			throw new Exception( "IP parameter cannot be empty.", E_USER_WARNING );
-		}
-		$this->request_ip = $ip;
 	}
 }
