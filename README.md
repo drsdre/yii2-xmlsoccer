@@ -39,7 +39,7 @@ You need to setup the client as application component:
     'xmlsoccerApi' => [
         'class' => '\XMLSoccer\Client',
         'api_key' => 'xxx',
-        'url' => 'http://www.xmlsoccer.com/FootballData.asmx',
+        'service_url' => 'http://www.xmlsoccer.com/FootballData.asmx',
     ]
     ...
 ]
@@ -50,7 +50,7 @@ or define the client directly in the code:
 ```php
 $client = new \XMLSoccer\Client([
     'api_key' => 'xxx',
-    'url' => 'http://www.xmlsoccer.com/FootballData.asmx',
+    'service_url' => 'http://www.xmlsoccer.com/FootballData.asmx',
 ]);
 ```
 
@@ -109,7 +109,7 @@ If you have a trial/free demo feed, use it like this:
 	try{
 		$client = new \XMLSoccer\Client([
             'api_key' => 'xxx',
-            'url' => 'http://www.xmlsoccer.com/FootballDataDemo.asmx',
+            'service_url' => 'http://www.xmlsoccer.com/FootballDataDemo.asmx',
             'request_ip' => '
         ]);
 		$fixtures=$soccer->GetFixturesByDateIntervalAndLeague(array("league"=>3,"startDateString"=>"2014-08-01 00:00","endDateString"=>"2014-09-30 00:00"));
