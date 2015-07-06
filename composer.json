@@ -1,19 +1,19 @@
 {
-  "name": "drsdre/yii2-xmlsoccer-client",
-  "description": "XML Soccer Client Extension for Yii 2",
-  "keywords": ["yii2", "XMLSoccer", "extension", "soap", "consumer", "live football scores"],
-  "homepage": "https://github.com/drsdre/yii2-xmlsoccer-client",
+  "name": "drsdre/yii2-xmlsoccer",
+  "description": "Yii2 Extension for XMLSoccer.com API access",
+  "keywords": ["yii2", "extension", "soap", "consumer", "API", "XMLSoccer.com", "live football scores"],
+  "homepage": "https://github.com/drsdre/yii2-xmlsoccer",
   "type": "yii2-extension",
   "license": "BSD-3-Clause",
   "support": {
-    "issues": "https://github.com/drsdre/yii2-xmlsoccer-client/issues?state=open",
-    "source": "https://github.com/drsdre/yii2-xmlsoccer-client",
+    "issues": "https://github.com/drsdre/yii2-xmlsoccer/issues?state=open",
+    "source": "https://github.com/drsdre/yii2-xmlsoccer",
     "docs": "http://www.xmlsoccer.com/FootballData.asmx"
   },
   "authors": [
     {
       "name": "Andre Schuurman",
-      "email": "andre.schuurman+yii2-xmlsoccer-client@gmail.com"
+      "email": "andre.schuurman+yii2-xmlsoccer@gmail.com"
     },
     {
       "name": "Volodymyr Chukh",

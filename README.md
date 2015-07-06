@@ -1,4 +1,4 @@
-Yii2-xmlsoccer-client
+Yii2-xmlsoccer
 =================
 
 Yii2 client for [XMLSoccer](http://XMLSoccer.com) API
@@ -18,13 +18,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-composer require --prefer-dist drsdre/yii2-xmlsoccer-client "*"
+composer require --prefer-dist drsdre/yii2-xmlsoccer "*"
 ```
 
 or add
 
 ```json
-"drsdre/yii2-xmlsoccer-client": "*"
+"drsdre/yii2-xmlsoccer": "*"
 ```
 
 to the `require` section of your `composer.json` file.
