@@ -119,13 +119,13 @@ class Client extends Component {
 		curl_close( $curl );
 
 		if ( $cerrno != 0 ) {
-			throw new Exception( $cerror, E_USER_WARNING );
+			throw new Exception( "Curl error: $cerror ($cerrno)\nURL: $url", E_USER_WARNING );
 		}
 
 		if ( $http_code == 200 ) {
 			return $data;
 		}
-		throw new Exception( $http_code . ' - ' . $data . "\nURL: " . $url );
+		throw new Exception( "Wrong HTTP status code: $http_code - $data\nURL: $url" );
 	}
 
 	public function setRequestIp( $ip ) {
