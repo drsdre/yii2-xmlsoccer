@@ -1,5 +1,5 @@
 <?php
-namespace drsdre\xmlsoccer;
+namespace XMLSoccer;
 /**
  * Class Exception
  *

@@ -10,13 +10,13 @@
  * @license MIT License
  */
 
-namespace drsdre\xmlsoccer;
+namespace XMLSoccer;
 
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 
 class Client extends Component {
-	public $url = "http://www.xmlsoccer.com/FootballData.asmx";
+	public $service_url = "http://www.xmlsoccer.com/FootballData.asmx";
 
 	public $api_key;
 

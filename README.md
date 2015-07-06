@@ -37,7 +37,7 @@ You need to setup the client as application component:
 ```php
 'components' => [
     'xmlsoccerApi' => [
-        'class' => 'drsdre\xmlsoccer\Client',
+        'class' => '\XMLSoccer\Client',
         'api_key' => 'xxx',
         'url' => 'http://www.xmlsoccer.com/FootballData.asmx',
     ]
@@ -48,7 +48,7 @@ You need to setup the client as application component:
 or define the client directly in the code:
 
 ```php
-$client = new \drsdre\xmlsoccer\Client([
+$client = new \XMLSoccer\Client([
     'api_key' => 'xxx',
     'url' => 'http://www.xmlsoccer.com/FootballData.asmx',
 ]);
@@ -77,7 +77,7 @@ Examples:
 List players for team with id 49
 --------------------------------
 	try {
-		$client = new \drsdre\xmlsoccer\Client([
+		$client = new \XMLSoccer\Client([
             'api_key' => 'xxx',
         ]);
 		$players=$soccer->GetPlayersByTeam(array("teamid"=>49));
@@ -93,7 +93,7 @@ List players for team with id 49
 If your server has multiple IP's available, you can set any IP for request:
 ---------------------------------------------
 	try {
-		$client = new \drsdre\xmlsoccer\Client([
+		$client = new \XMLSoccer\Client([
             'api_key' => 'xxx',
         ]);
 		$soccer->setRequestIp("ip_for_request");
@@ -107,7 +107,7 @@ If your server has multiple IP's available, you can set any IP for request:
 If you have a trial/free demo feed, use it like this:
 ------------------------------------------------------
 	try{
-		$client = new \drsdre\xmlsoccer\Client([
+		$client = new \XMLSoccer\Client([
             'api_key' => 'xxx',
             'url' => 'http://www.xmlsoccer.com/FootballDataDemo.asmx',
             'request_ip' => '
