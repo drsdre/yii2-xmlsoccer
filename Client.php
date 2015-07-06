@@ -122,10 +122,10 @@ class Client extends Component {
 			throw new Exception( "Curl error: $cerror ($cerrno)\nURL: $url", E_USER_WARNING );
 		}
 
-		if ( $http_code == 200 ) {
-			return $data;
+		if ( $http_code <> 200 ) {
+			throw new Exception( "Wrong HTTP status code: $http_code - $data\nURL: $url" );
 		}
-		throw new Exception( "Wrong HTTP status code: $http_code - $data\nURL: $url" );
+		return $data;
 	}
 
 	public function setRequestIp( $ip ) {
