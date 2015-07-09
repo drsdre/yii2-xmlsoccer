@@ -54,6 +54,32 @@ $client = new \XMLSoccer\Client([
 ]);
 ```
 
+Optionally a cache can be specified to keep the client returning data during call time-out:
+
+```php
+'components' => [
+    'xmlsoccerCache' => [
+        'class' => 'yii\caching\FileCache',
+    ],
+    'xmlsoccerApi' => [
+        'class' => '\XMLSoccer\Client',
+        'api_key' => 'xxx',
+        'cache' => 'xmlsoccerCache',
+    ]
+    ...
+]
+```
+
+If you need to have the API be executed via a specific network adapter it's possible the specify the outgoing IP:
+
+```php
+$client = new \XMLSoccer\Client([
+    'api_key' => 'xxx',
+    'service_url' => 'http://www.xmlsoccer.com/FootballData.asmx',
+    'service_ip' => '192.168.1.1',
+]);
+```
+
 By default client url is setup to demo API (http://www.xmlsoccer.com/FootballData.asmx). For demo access use http://www.xmlsoccer.com/FootballDataDemo.asmx as url.
 
 How to use:
@@ -110,7 +136,6 @@ If you have a trial/free demo feed, use it like this:
 		$client = new \XMLSoccer\Client([
             'api_key' => 'xxx',
             'service_url' => 'http://www.xmlsoccer.com/FootballDataDemo.asmx',
-            'request_ip' => '
         ]);
 		$fixtures=$soccer->GetFixturesByDateIntervalAndLeague(array("league"=>3,"startDateString"=>"2014-08-01 00:00","endDateString"=>"2014-09-30 00:00"));
 		var_dump($result);

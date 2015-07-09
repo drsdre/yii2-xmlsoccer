@@ -32,6 +32,11 @@ class Client extends Component {
 	public $request_ip;
 
 	/**
+	 * @var string optional a cache component/name to cache content of requests between time outs
+	 */
+	public $cache;
+
+	/**
 	 * Time out to avoid misuse of service for specific calls
 	 */
 	const TIMEOUT_GetLiveScore = 25;
@@ -55,6 +60,12 @@ class Client extends Component {
 		if ( empty( $this->api_key ) ) {
 			throw new Exception( "api_key cannot be empty. Please configure." );
 		}
+		if ($this->cache) {
+			// If class was specified as name, try to instantiate on application
+			if (is_string($this->cache)) {
+				$this->cache = \yii::$app->{$this->cache};
+			}
+		}
 	}
 
 	/**
@@ -75,25 +86,56 @@ class Client extends Component {
 	 *	list available methods with params.
 	 */
 	public function __call( $name, $params ) {
-		$data = $this->request( $this->buildUrl( $name, $params ) );
+
+		$url = $this->buildUrl( $name, $params );
+
+		// If caching is available try to return results from cache
+		if ( $this->cache && $xml = $this->xmlCacheGet( $url ) ) {
+			return $xml;
+		}
+
+		// Retrieve the data from API
+		$data = $this->request( $url );
+
+		// Convert and check if data is valid XML
 		if ( false === ( $xml = simplexml_load_string( $data ) ) ) {
 			throw new Exception( "Invalid XML" );
 		}
+
+		// Check if time-out is given for call
 		if ( strstr( $xml[0], "To avoid misuse of the service" ) ) {
-			switch ( $name ) {
-				case "GetLiveScore":
-				case "GetLiveScoreByLeague":
-				case "GetOddsByFixtureMatchID":
-				case "GetHistoricMatchesByLeagueAndSeason":
-				case "GetAllTeams":
-				case "GetAllTeamsByLeagueAndSeason":
-					throw new Exception( $xml[0], constant( "self::TIMEOUT_" . $name ) );
-				default:
-					throw new Exception( $xml[0], self::TIMEOUT_Others );
-			}
+			throw new Exception( $xml[0], $this->getFunctionTimeout( $name ) );
+		}
+
+		// If caching is available put results in cache
+		if ( $this->cache ) {
+			// Add cache information
+			$xml->addChild('cached', date('Y-m-d h:m:s'));
+			$this->xmlCacheSet( $url, $xml, $this->getFunctionTimeout( $name ) );
 		}
 
 		return $xml;
+	}
+
+	/**
+	 * Get call time-out for function
+	 *
+	 * @param $function
+	 *
+	 * @return int|mixed
+	 */
+	protected function getFunctionTimeout($function) {
+		switch ( $function ) {
+			case "GetLiveScore":
+			case "GetLiveScoreByLeague":
+			case "GetOddsByFixtureMatchID":
+			case "GetHistoricMatchesByLeagueAndSeason":
+			case "GetAllTeams":
+			case "GetAllTeamsByLeagueAndSeason":
+				return constant( "self::TIMEOUT_" . $function );
+			default:
+				return self::TIMEOUT_Others;
+		}
 	}
 
 	/**
@@ -151,5 +193,17 @@ class Client extends Component {
 			throw new Exception( "Wrong HTTP status code: $http_code - $data\nURL: $url" );
 		}
 		return $data;
+	}
+
+	protected function xmlCacheSet($key, $xml, $timeout)
+	{
+		$this->cache->set($key, $xml->asXML(), $timeout);
+	}
+
+	protected function xmlCacheGet($key)
+	{
+		if ($xml = $this->cache->get($key)) {
+			return simplexml_load_string($xml);
+		}
 	}
 }
