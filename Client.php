@@ -114,8 +114,11 @@ class Client extends Component {
 
 		// If requested generate a content hash and source url
 		if ($this->generate_hash) {
-			$xml->addChild('contentHash', md5($data));
-			$xml->addChild('sourceUrl', htmlspecialchars($url));
+			$xml_hashing = $xml;
+			unset($xml->AccountInformation);
+
+			$xml->addChild( 'contentHash', md5($xml_hashing->asXML()) );
+			$xml->addChild( 'sourceUrl', htmlspecialchars( $url ) );
 		}
 
 		// If caching is available put results in cache
