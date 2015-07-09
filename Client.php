@@ -37,6 +37,11 @@ class Client extends Component {
 	public $cache;
 
 	/**
+	 * @var boolean optional generate a content hash to facilitate easier change detection
+	 */
+	public $generate_hash = false;
+
+	/**
 	 * Time out to avoid misuse of service for specific calls
 	 */
 	const TIMEOUT_GetLiveScore = 25;
@@ -105,6 +110,12 @@ class Client extends Component {
 		// Check if time-out is given for call
 		if ( strstr( $xml[0], "To avoid misuse of the service" ) ) {
 			throw new Exception( $xml[0], $this->getFunctionTimeout( $name ) );
+		}
+
+		// If requested generate a content hash and source url
+		if ($this->generate_hash) {
+			$xml->addChild('contentHash', md5($data));
+			$xml->addChild('sourceUrl', htmlspecialchars($url));
 		}
 
 		// If caching is available put results in cache
