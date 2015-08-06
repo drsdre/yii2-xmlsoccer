@@ -13,6 +13,7 @@
 namespace XMLSoccer;
 
 use yii\base\Component;
+use yii\base\Exception;
 use yii\base\InvalidConfigException;
 
 class Client extends Component {
@@ -114,8 +115,9 @@ class Client extends Component {
 
 		// If requested generate a content hash and source url
 		if ($this->generate_hash) {
-			$xml_hashing = $xml;
-			unset($xml->AccountInformation);
+			// Hash an XML copy without account information to prevent wrongly hash mismatches
+			$xml_hashing = clone $xml;
+			unset($xml_hashing->AccountInformation);
 
 			$xml->addChild( 'contentHash', md5($xml_hashing->asXML()) );
 			$xml->addChild( 'sourceUrl', htmlspecialchars( $url ) );
@@ -125,7 +127,9 @@ class Client extends Component {
 		if ( $this->cache ) {
 			// Add cache information
 			$xml->addChild('cached', date('Y-m-d h:m:s'));
-			$this->xmlCacheSet( $url, $xml, $this->getFunctionTimeout( $name ) );
+			if (!$this->xmlCacheSet( $url, $xml, $this->getFunctionTimeout( $name ) )) {
+				throw new Exception('Failed to cache results for '.$name);
+			}
 		}
 
 		return $xml;
@@ -209,11 +213,25 @@ class Client extends Component {
 		return $data;
 	}
 
+	/**
+	 * Cache result
+	 *
+	 * @param $key
+	 * @param $xml
+	 * @param $timeout
+	 */
 	protected function xmlCacheSet($key, $xml, $timeout)
 	{
-		$this->cache->set($key, $xml->asXML(), $timeout);
+		return $this->cache->set($key, $xml->asXML(), $timeout);
 	}
 
+	/**
+	 * Retrieve from cache
+	 *
+	 * @param $key
+	 *
+	 * @return SimpleXMLElement an object of class SimpleXMLElement
+	 */
 	protected function xmlCacheGet($key)
 	{
 		if ($xml = $this->cache->get($key)) {
