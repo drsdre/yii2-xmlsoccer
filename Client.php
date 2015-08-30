@@ -13,7 +13,6 @@
 namespace XMLSoccer;
 
 use yii\base\Component;
-use yii\base\Exception;
 use yii\base\InvalidConfigException;
 
 class Client extends Component {
@@ -57,14 +56,14 @@ class Client extends Component {
 	/**
 	 * Initialize component
 	 *
-	 * @throws Exception
+	 * @throws InvalidConfigException
 	 */
 	public function init() {
 		if ( empty( $this->service_url ) ) {
-			throw new Exception( "service_url cannot be empty. Please configure." );
+			throw new InvalidConfigException( "service_url cannot be empty. Please configure." );
 		}
 		if ( empty( $this->api_key ) ) {
-			throw new Exception( "api_key cannot be empty. Please configure." );
+			throw new InvalidConfigException( "api_key cannot be empty. Please configure." );
 		}
 		if ($this->cache) {
 			// If class was specified as name, try to instantiate on application
@@ -79,11 +78,11 @@ class Client extends Component {
 	 *
 	 * @param $ip
 	 *
-	 * @throws Exception
+	 * @throws InvalidConfigException
 	 */
 	public function setRequestIp( $ip ) {
 		if ( empty( $ip ) ) {
-			throw new Exception( "IP parameter cannot be empty.", E_USER_WARNING );
+			throw new InvalidConfigException( "IP parameter cannot be empty.", E_USER_WARNING );
 		}
 		$this->request_ip = $ip;
 	}
@@ -105,12 +104,21 @@ class Client extends Component {
 
 		// Convert and check if data is valid XML
 		if ( false === ( $xml = simplexml_load_string( $data ) ) ) {
-			throw new Exception( "Invalid XML" );
+			throw new Exception( "Invalid XML", Exception::E_API_INVALID_RESPONSE );
 		}
 
 		// Check if time-out is given for call
 		if ( strstr( $xml[0], "To avoid misuse of the service" ) ) {
-			throw new Exception( $xml[0], $this->getFunctionTimeout( $name ) );
+			// Check if API key was added to spammers list
+			$spam_result = $this->IsMyApiKeyPutOnSpammersList();
+			if ( strstr( $spam_result, "Yes" ) ) {
+				throw new Exception( $spam_result, Exception::E_API_SPAM_LIST );
+				// $this->getFunctionTimeout( $name )
+			}
+			else {
+				throw new Exception( $xml[0], Exception::E_API_RATE_LIMIT );
+				// $this->getFunctionTimeout( $name )
+			}
 		}
 
 		// If requested generate a content hash and source url
@@ -128,7 +136,7 @@ class Client extends Component {
 			// Add cache information
 			$xml->addChild('cached', date('Y-m-d h:m:s'));
 			if (!$this->xmlCacheSet( $url, $xml, $this->getFunctionTimeout( $name ) )) {
-				throw new Exception('Failed to cache results for '.$name);
+				throw new Exception('Failed to cache results for '.$name, Exception::E_API_GENERAL);
 			}
 		}
 
@@ -173,7 +181,7 @@ class Client extends Component {
 					$url .= "&" . strtolower( $key ) . "=" . rawurlencode( $value );
 				}
 			} else {
-				throw new Exception( "Arguments must be an array" );
+				throw new Exception( "Arguments must be an array", Exception::E_API_INVALID_PARAMETER );
 			}
 		}
 
