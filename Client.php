@@ -15,6 +15,8 @@ namespace XMLSoccer;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 
+use XMLSoccer\Exception;
+
 class Client extends Component {
 	/**
 	 * @var string url API endpoint
@@ -104,7 +106,7 @@ class Client extends Component {
 
 		// Convert and check if data is valid XML
 		if ( false === ( $xml = simplexml_load_string( $data ) ) ) {
-			throw new Exception( "Invalid XML", Exception::E_API_INVALID_RESPONSE );
+			throw new Exception("$url: Invalid XML given back", Exception::E_API_INVALID_RESPONSE );
 		}
 
 		// Check if time-out is given for call
@@ -112,11 +114,11 @@ class Client extends Component {
 			// Check if API key was added to spammers list
 			$spam_result = $this->IsMyApiKeyPutOnSpammersList();
 			if ( strstr( $spam_result, "Yes" ) ) {
-				throw new Exception( $spam_result, Exception::E_API_SPAM_LIST );
+				throw new Exception("$url: $spam_result", Exception::E_API_SPAM_LIST );
 				// $this->getFunctionTimeout( $name )
 			}
 			else {
-				throw new Exception( $xml[0], Exception::E_API_RATE_LIMIT );
+				throw new Exception("$url: {$xml[0]}", Exception::E_API_RATE_LIMIT );
 				// $this->getFunctionTimeout( $name )
 			}
 		}
@@ -136,7 +138,7 @@ class Client extends Component {
 			// Add cache information
 			$xml->addChild('cached', date('Y-m-d h:m:s'));
 			if (!$this->xmlCacheSet( $url, $xml, $this->getFunctionTimeout( $name ) )) {
-				throw new Exception('Failed to cache results for '.$name, Exception::E_API_GENERAL);
+				throw new Exception("$url: Failed to cache results", Exception::E_API_GENERAL);
 			}
 		}
 
@@ -181,7 +183,7 @@ class Client extends Component {
 					$url .= "&" . strtolower( $key ) . "=" . rawurlencode( $value );
 				}
 			} else {
-				throw new Exception( "Arguments must be an array", Exception::E_API_INVALID_PARAMETER );
+				throw new Exception( "Arguments $params must be an array", Exception::E_API_INVALID_PARAMETER );
 			}
 		}
 
@@ -216,7 +218,7 @@ class Client extends Component {
 		}
 
 		if ( $http_code <> 200 ) {
-			throw new Exception( "Wrong HTTP status code: $http_code - $data\nURL: $url" );
+			throw new Exception( "Wrong HTTP status code: $http_code - $data\nURL: $url", Exception::E_API_GENERAL );
 		}
 		return $data;
 	}
