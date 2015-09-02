@@ -90,6 +90,26 @@ class Client extends Component {
 	}
 
 	/**
+	 * Check if API account is on spam list
+	 *
+	 * @return false|string error message
+	 * @throws \XMLSoccer\Exception
+	 */
+	public function onSpamlist() {
+
+		$url = $this->buildUrl( 'IsMyApiKeyPutOnSpammersList', [] );
+
+		// Retrieve the data from API
+		$result = $this->request( $url );
+
+		if (strstr( $result, "Yes" )) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 *	list available methods with params.
 	 */
 	public function __call( $name, $params ) {
@@ -109,11 +129,15 @@ class Client extends Component {
 			throw new Exception("$url: Invalid XML given back", Exception::E_API_INVALID_RESPONSE );
 		}
 
+		// Check if API-key is valid
+		if ( strstr( $xml[0], "unable to verify your API-key" ) ) {
+			throw new Exception("$url: {$xml[0]}", Exception::E_API_INVALID_PARAMETER );
+		}
+
 		// Check if time-out is given for call
 		if ( strstr( $xml[0], "To avoid misuse of the service" ) ) {
 			// Check if API key was added to spammers list
-			$spam_result = $this->IsMyApiKeyPutOnSpammersList();
-			if ( strstr( $spam_result, "Yes" ) ) {
+			if ( $spam_result = $this->onSpamlist() !== false ) {
 				throw new Exception("$url: $spam_result", Exception::E_API_SPAM_LIST );
 				// $this->getFunctionTimeout( $name )
 			}
