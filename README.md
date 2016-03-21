@@ -130,11 +130,11 @@ If your server has multiple IP's available, you can set any IP for request:
             'api_key' => 'xxx',
         ]);
 		$client->setRequestIp("ip_for_request");
-		$result = $client->GetLeagueStandingsBySeason(array("league"=>3,"seasonDateString"=>"1314"));
-		var_dump($result);
+		$leagues = $client->GetLeagueStandingsBySeason(array("league"=>3,"seasonDateString"=>"1516"));
+		var_dump($leagues);
 	}
-	catch(XMLSoccerException $e) {
-		echo "XMLSoccerException: ".$e->getMessage();
+	catch(Exception $e) {
+		echo "XMLSoccer Exception: ".$e->getMessage();
 	}
 
 If you have a trial/free demo feed, use it like this:
@@ -144,11 +144,11 @@ If you have a trial/free demo feed, use it like this:
             'api_key' => 'xxx',
             'service_url' => 'http://www.xmlsoccer.com/FootballDataDemo.asmx',
         ]);
-		$fixtures = $client->GetFixturesByDateIntervalAndLeague(array("league"=>3,"startDateString"=>"2014-08-01 00:00","endDateString"=>"2014-09-30 00:00"));
-		var_dump($result);
+		$fixtures = $client->GetFixturesByDateIntervalAndLeague(array("league"=>3,"startDateString"=>"2016-01-01 00:00","endDateString"=>"2016-02-01 00:00"));
+		var_dump($fixtures);
 	}
-	catch(XMLSoccerException $e){
-		echo "XMLSoccerException: ".$e->getMessage();
+	catch(Exception $e){
+		echo "XMLSoccer Exception: ".$e->getMessage();
 	}
 
 
