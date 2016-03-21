@@ -113,9 +113,9 @@ List players for team with id 49
 		$client = new \XMLSoccer\Client([
             'api_key' => 'xxx',
         ]);
-		$players=$soccer->GetPlayersByTeam(array("teamid"=>49));
+		$players=$client->GetPlayersByTeam(array("teamid"=>49));
 		echo "Players List:<br>";
-		foreach($players as $key=>$value){
+		foreach($players as $key=>$value) {
 			echo "<b>".$value->Name."</b> ".$value->Position."<br>";
 		}
 	}
@@ -129,8 +129,8 @@ If your server has multiple IP's available, you can set any IP for request:
 		$client = new \XMLSoccer\Client([
             'api_key' => 'xxx',
         ]);
-		$soccer->setRequestIp("ip_for_request");
-		$result=$soccer->GetLeagueStandingsBySeason(array("league"=>3,"seasonDateString"=>"1314"));
+		$client->setRequestIp("ip_for_request");
+		$result = $client->GetLeagueStandingsBySeason(array("league"=>3,"seasonDateString"=>"1314"));
 		var_dump($result);
 	}
 	catch(XMLSoccerException $e) {
@@ -144,7 +144,7 @@ If you have a trial/free demo feed, use it like this:
             'api_key' => 'xxx',
             'service_url' => 'http://www.xmlsoccer.com/FootballDataDemo.asmx',
         ]);
-		$fixtures=$soccer->GetFixturesByDateIntervalAndLeague(array("league"=>3,"startDateString"=>"2014-08-01 00:00","endDateString"=>"2014-09-30 00:00"));
+		$fixtures = $client->GetFixturesByDateIntervalAndLeague(array("league"=>3,"startDateString"=>"2014-08-01 00:00","endDateString"=>"2014-09-30 00:00"));
 		var_dump($result);
 	}
 	catch(XMLSoccerException $e){
