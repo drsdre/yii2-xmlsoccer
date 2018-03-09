@@ -207,7 +207,8 @@ class Client extends Component
             ->send();
 
         if ($response->isOk) {
-            $data = ArrayHelper::remove($response->data, 'AccountInformation');
+            $data = $response->data;
+            ArrayHelper::remove($data, 'AccountInformation');
 
             if (isset($data[0]) && (false !== strpos($data[0], 'To avoid misuse of the service'))) {
                 throw new Exception("$methodName: {$data[0]}", Exception::E_API_RATE_LIMIT);
