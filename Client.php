@@ -120,13 +120,13 @@ class Client extends Component
         }
         if ($this->cache) {
             // If class was specified as name, try to instantiate on application
-            if (is_string($this->cache)) {
-                $this->cache = ArrayHelper::getValue(Yii::$app, $this->cache);
+            if (is_string($this->cache) && Yii::$app->has($this->cache)) {
+                $this->cache = Yii::$app->get($this->cache);
             } elseif (is_array($this->cache)) {
                 $this->cache = Yii::createObject($this->cache);
             }
-        } elseif (Yii::$app->cache) {
-            $this->cache = &Yii::$app->cache;
+        } elseif (isset(Yii::$app->cache)) {
+            $this->cache = Yii::$app->cache;
         }
         $this->_client = new \yii\httpclient\Client([
             'baseUrl' => $this->serviceUrl,
@@ -207,11 +207,17 @@ class Client extends Component
             ->send();
 
         if ($response->isOk) {
-            if ($this->cache) {
-                $this->cache->set($hash, $response->data, $this->getFunctionTimeout($methodName));
+            $data = ArrayHelper::remove($response->data, 'AccountInformation');
+
+            if (isset($data[0]) && (false !== strpos($data[0], 'To avoid misuse of the service'))) {
+                throw new Exception("$methodName: {$data[0]}", Exception::E_API_RATE_LIMIT);
             }
 
-            return $response->data;
+            if ($this->cache) {
+                $this->cache->set($hash, $data, $this->getFunctionTimeout($methodName));
+            }
+
+            return $data;
         } else {
             throw new Exception($response->content);
         }
