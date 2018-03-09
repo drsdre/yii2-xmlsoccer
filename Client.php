@@ -15,44 +15,45 @@ namespace drsdre\yii\xmlsoccer;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
+use yii\validators\IpValidator;
 use Yii;
 
 /**
  * Class Client
  * @package drsdre\yii\xmlsoccer
  *
- * @method \SimpleXMLElement checkApiKey()
- * @method \SimpleXMLElement getAllGroupsByLeagueAndSeason(string $league, string $seasonDateString)
- * @method \SimpleXMLElement getAllLeagues()
- * @method \SimpleXMLElement getAllOddsByFixtureMatchId(integer $fixtureMatch_Id)
- * @method \SimpleXMLElement getAllTeams()
- * @method \SimpleXMLElement getAllTeamsByLeagueAndSeason(string $league, string $seasonDateString)
- * @method \SimpleXMLElement getCupStandingsByGroupId(integer $group_Id)
- * @method \SimpleXMLElement getEarliestMatchDatePerLeague(string $league)
- * @method \SimpleXMLElement getFixtureMatchByID(integer $Id)
- * @method \SimpleXMLElement getFixturesByDateInterval(string $startDateString, string $endDateString)
- * @method \SimpleXMLElement getFixturesByDateIntervalAndLeague(string $startDateString, string $endDateString, string $league)
- * @method \SimpleXMLElement getFixturesByDateIntervalAndTeam(string $startDateString, string $endDateString, string $teamId)
- * @method \SimpleXMLElement getFixturesByLeagueAndSeason(string $league, string $seasonDateString)
- * @method \SimpleXMLElement getHistoricMatchesByFixtureMatchID(integer $Id)
- * @method \SimpleXMLElement getHistoricMatchesByID(integer $Id)
- * @method \SimpleXMLElement getHistoricMatchesByLeagueAndDateInterval(string $startDateString, string $endDateString, string $league)
- * @method \SimpleXMLElement getHistoricMatchesByLeagueAndSeason(string $league, string $seasonDateString)
- * @method \SimpleXMLElement getHistoricMatchesByTeamAndDateInterval(string $startDateString, string $endDateString, string $teamId)
- * @method \SimpleXMLElement getLeagueStandingsBySeason(string $league, string $seasonDateString)
- * @method \SimpleXMLElement getLiveScore()
- * @method \SimpleXMLElement getNextMatchOddsByLeague(string $league)
- * @method \SimpleXMLElement getOddsByFixtureMatchId(string $fixtureMatch_Id)
- * @method \SimpleXMLElement getOddsByFixtureMatchId2(string $fixtureMatch_Id)
- * @method \SimpleXMLElement getPlayerById(integer $playerId)
- * @method \SimpleXMLElement getPlayersByTeam(string $teamId)
- * @method \SimpleXMLElement getPlayoffFixturesByLeagueAndSeason(string $league, string $seasonDateString)
- * @method \SimpleXMLElement getRescheduleOfMatchDatesByFixtureMatchId(integer $Id)
- * @method \SimpleXMLElement getTeam(string $teamName)
- * @method \SimpleXMLElement getTopScorersByGroupId(integer $groupId)
- * @method \SimpleXMLElement getTopScorersByLeagueAndSeason(string $league, string $seasonDateString)
- * @method \SimpleXMLElement imAlive()
- * @method \SimpleXMLElement isMyApiKeyPutOnSpammersList()
+ * @method array checkApiKey()
+ * @method array getAllGroupsByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getAllLeagues()
+ * @method array getAllOddsByFixtureMatchId(integer $fixtureMatch_Id)
+ * @method array getAllTeams()
+ * @method array getAllTeamsByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getCupStandingsByGroupId(integer $group_Id)
+ * @method array getEarliestMatchDatePerLeague(string $league)
+ * @method array getFixtureMatchByID(integer $Id)
+ * @method array getFixturesByDateInterval(string $startDateString, string $endDateString)
+ * @method array getFixturesByDateIntervalAndLeague(string $startDateString, string $endDateString, string $league)
+ * @method array getFixturesByDateIntervalAndTeam(string $startDateString, string $endDateString, string $teamId)
+ * @method array getFixturesByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getHistoricMatchesByFixtureMatchID(integer $Id)
+ * @method array getHistoricMatchesByID(integer $Id)
+ * @method array getHistoricMatchesByLeagueAndDateInterval(string $startDateString, string $endDateString, string $league)
+ * @method array getHistoricMatchesByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getHistoricMatchesByTeamAndDateInterval(string $startDateString, string $endDateString, string $teamId)
+ * @method array getLeagueStandingsBySeason(string $league, string $seasonDateString)
+ * @method array getLiveScore()
+ * @method array getNextMatchOddsByLeague(string $league)
+ * @method array getOddsByFixtureMatchId(string $fixtureMatch_Id)
+ * @method array getOddsByFixtureMatchId2(string $fixtureMatch_Id)
+ * @method array getPlayerById(integer $playerId)
+ * @method array getPlayersByTeam(string $teamId)
+ * @method array getPlayoffFixturesByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getRescheduleOfMatchDatesByFixtureMatchId(integer $Id)
+ * @method array getTeam(string $teamName)
+ * @method array getTopScorersByGroupId(integer $groupId)
+ * @method array getTopScorersByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array imAlive()
+ * @method array isMyApiKeyPutOnSpammersList()
  */
 class Client extends Component
 {
@@ -73,6 +74,7 @@ class Client extends Component
 
     /**
      * @var \yii\caching\CacheInterface optional a cache component/name to cache content of requests between time outs
+     * (defaults to [[Yii::$app->cache]])
      */
     public $cache;
 
@@ -85,6 +87,11 @@ class Client extends Component
      * @var array internal method argumentNames (will be parsed from doc comment)
      */
     private $_magicMethodArgumentNames = [];
+
+    /**
+     * @var \yii\httpclient\Client Http client to send and parse requests
+     */
+    private $_client;
 
     /**
      * Time out to avoid misuse of service for specific calls
@@ -118,106 +125,96 @@ class Client extends Component
             } elseif (is_array($this->cache)) {
                 $this->cache = Yii::createObject($this->cache);
             }
+        } elseif (Yii::$app->cache) {
+            $this->cache = &Yii::$app->cache;
         }
-    }
+        $this->_client = new \yii\httpclient\Client([
+            'baseUrl' => $this->serviceUrl,
+            'requestConfig' => [
+                'method' => 'POST',
+                'data' => [
+                    'ApiKey' => $this->apiKey
+                ]
+            ],
+            'responseConfig' => [
+                'format' => \yii\httpclient\Client::FORMAT_XML
+            ]
+        ]);
 
-    /**
-     * Set the IP address of specific interface to be used for API calls
-     *
-     * @param string $ip
-     *
-     * @throws InvalidConfigException
-     */
-    public function setRequestIp($ip)
-    {
-        if (empty($ip)) {
-            throw new InvalidConfigException("IP parameter cannot be empty.", E_USER_WARNING);
-        }
-        $this->requestIp = $ip;
-    }
-
-    /**
-     * Check if API account is on spam list
-     *
-     * @return false|string error message
-     * @throws \drsdre\yii\xmlsoccer\Exception
-     */
-    public function onSpamlist()
-    {
-        $url = $this->buildUrl('IsMyApiKeyPutOnSpammersList', []);
-
-        // Retrieve the data from API
-        $result = $this->request($url);
-
-        if (strstr($result, "Yes")) {
-            return $result;
-        } else {
-            return false;
+        if ($this->requestIp) {
+            $validator = new IpValidator([
+                'ipv6' => true,
+                'ipv4' => true,
+                'subnet' => false,
+                'expandIPv6' => true
+            ]);
+            if ($validator->validate($this->requestIp)) {
+                ArrayHelper::setValue($this->_client->requestConfig, 'options.bindto', $this->requestIp);
+            }
         }
     }
 
     /**
      * List available methods with params.
      *
-     * @return \SimpleXMLElement
+     * @param string $methodName
+     * @param array $params
+     * @return array
      *
-     * @throws \drsdre\yii\xmlsoccer\Exception
+     * @throws Exception
      */
-    public function __call($name, $params)
+    public function __call($methodName, $params)
     {
+        $mapping = $this->getMethodArguments($methodName);
 
-        $url = $this->buildUrl($name, $params);
-
-        // If caching is available try to return results from cache
-        if ($this->cache && $xml = $this->xmlCacheGet($url)) {
-            return $xml;
+        $hash = md5($methodName.serialize($params));
+        if ($this->cache && (false !== ($array = $this->cache->get($hash)))) {
+            return $array;
         }
 
-        // Retrieve the data from API
-        $data = $this->request($url);
-
-        // Convert and check if data is valid XML
-        if (false === ($xml = simplexml_load_string($data))) {
-            throw new Exception("$url: Invalid XML given back", Exception::E_API_INVALID_RESPONSE);
-        }
-
-        // Check if API-key is valid
-        if (strstr($xml[0], "unable to verify your API-key")) {
-            throw new Exception("$url: {$xml[0]}", Exception::E_API_INVALID_PARAMETER);
-        }
-
-        // Check if time-out is given for call
-        if (strstr($xml[0], "To avoid misuse of the service")) {
-            // Check if API key was added to spammers list
-            if ($spam_result = $this->onSpamlist() !== false) {
-                throw new Exception("$url: $spam_result", Exception::E_API_SPAM_LIST);
-                // $this->getFunctionTimeout( $name )
-            } else {
-                throw new Exception("$url: {$xml[0]}", Exception::E_API_RATE_LIMIT);
-                // $this->getFunctionTimeout( $name )
+        $data = [];
+        for ($i = 0; $i < count($params); $i++) {
+            if (array_key_exists($i, $mapping)) {
+                switch (strtolower($mapping[$i]['type'])) {
+                    case 'int':
+                    case 'integer':
+                        $params[$i] = (integer)$params[$i];
+                        break;
+                    case 'bool':
+                    case 'boolean':
+                        $params[$i] = (boolean)$params[$i];
+                        break;
+                    case 'float':
+                    case 'double':
+                        $params[$i] = (float)$params[$i];
+                        break;
+                    case 'array':
+                        $params[$i] = (array)$params[$i];
+                        break;
+                    case 'string':
+                    default:
+                        $params[$i] = (string)$params[$i];
+                        break;
+                }
+                $data[$mapping[$i]['name']] = $params[$i];
             }
         }
 
-        // If requested generate a content hash and source url
-        if ($this->generateHash) {
-            // Hash an XML copy without account information to prevent wrongly hash mismatches
-            $xml_hashing = clone $xml;
-            unset($xml_hashing->AccountInformation);
+        $response = $this->_client
+            ->createRequest()
+            ->setUrl(ucfirst($methodName))
+            ->addData($data)
+            ->send();
 
-            $xml->addChild('contentHash', md5($xml_hashing->asXML()));
-            $xml->addChild('sourceUrl', htmlspecialchars($url));
-        }
-
-        // If caching is available put results in cache
-        if ($this->cache) {
-            // Add cache information
-            $xml->addChild('cached', date('Y-m-d h:m:s'));
-            if (!$this->xmlCacheSet($url, $xml, $this->getFunctionTimeout($name))) {
-                throw new Exception("$url: Failed to cache results", Exception::E_API_GENERAL);
+        if ($response->isOk) {
+            if ($this->cache) {
+                $this->cache->set($hash, $response->data, $this->getFunctionTimeout($methodName));
             }
-        }
 
-        return $xml;
+            return $response->data;
+        } else {
+            throw new Exception($response->content);
+        }
     }
 
     /**
@@ -240,28 +237,6 @@ class Client extends Component
             default:
                 return self::TIMEOUT_OTHERS;
         }
-    }
-
-    /**
-     * Build URL for API call
-     *
-     * @param string $methodName
-     * @param array $params
-     *
-     * @return string
-     */
-    protected function buildUrl($methodName, $params)
-    {
-        $mapping = $this->getMethodArguments($methodName);
-
-        $url = $this->serviceUrl . "/" . ucfirst($methodName) . "?ApiKey=" . $this->apiKey;
-        for ($i = 0; $i < count($params); $i++) {
-            if (array_key_exists($i, $mapping)) {
-                $url .= "&" . $mapping[$i]['name'] . "=" . rawurlencode($params[$i]);
-            }
-        }
-
-        return $url;
     }
 
     /**
@@ -311,69 +286,5 @@ class Client extends Component
         }
 
         return ArrayHelper::getValue($this->_magicMethodArgumentNames, $methodName, []);
-    }
-
-    /**
-     * Execute API request
-     *
-     * @param string $url
-     *
-     * @return mixed
-     * @throws \drsdre\yii\xmlsoccer\Exception
-     */
-    protected function request($url)
-    {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_TIMEOUT, self::TIMEOUT_CURL);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, self::TIMEOUT_CURL);
-        if (!empty($this->requestIp)) {
-            curl_setopt($curl, CURLOPT_INTERFACE, $this->requestIp);
-        }
-        $data = curl_exec($curl);
-        $cerror = curl_error($curl);
-        $cerrno = curl_errno($curl);
-        $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        if ($cerrno != 0) {
-            throw new Exception("Curl error: $cerror ($cerrno)\nURL: $url", E_USER_WARNING);
-        }
-
-        if ($http_code <> 200) {
-            throw new Exception("Wrong HTTP status code: $http_code - $data\nURL: $url", Exception::E_API_GENERAL);
-        }
-        return $data;
-    }
-
-    /**
-     * Cache result
-     *
-     * @param string $key
-     * @param \SimpleXMLElement $xml
-     * @param integer $timeout
-     *
-     * @return boolean
-     */
-    protected function xmlCacheSet($key, $xml, $timeout)
-    {
-        return $this->cache->set($key, $xml->asXML(), $timeout);
-    }
-
-    /**
-     * Retrieve from cache
-     *
-     * @param string $key
-     *
-     * @return \SimpleXMLElement|null an object of class SimpleXMLElement
-     */
-    protected function xmlCacheGet($key)
-    {
-        if ($xml = $this->cache->get($key)) {
-            return simplexml_load_string($xml);
-        }
-
-        return null;
     }
 }

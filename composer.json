@@ -36,7 +36,8 @@
     "php": ">=5.5.0",
     "lib-curl": "*",
     "ext-simplexml": "*",
-    "yiisoft/yii2": "~2.0"
+    "yiisoft/yii2": "~2.0",
+    "yiisoft/yii2-httpclient": "~2.0"
   },
   "require-dev": {
     "yiisoft/yii2-coding-standards": "~2.0"
