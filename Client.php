@@ -284,7 +284,7 @@ class Client extends Component
             foreach ($lines as $line) {
                 $matches = [];
                 if (preg_match($regexp, $line, $matches)) {
-                    @list($null, $returnType, $methodName, $argumentString) = $matches;
+                    @list($null, $returnType, $method, $argumentString) = $matches;
                     if (is_null($argumentString)) {
                         $arguments = [];
                     } else {
@@ -303,7 +303,7 @@ class Client extends Component
                         }
                     }
 
-                    $this->_magicMethodArgumentNames[$methodName] = $arguments;
+                    $this->_magicMethodArgumentNames[$method] = $arguments;
                 }
             }
         } catch (\ReflectionException $e) {
