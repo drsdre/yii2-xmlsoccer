@@ -38,6 +38,11 @@ use yii\db\ActiveRecord;
  */
 class Player extends ActiveRecord
 {
+    const POSITION_GOALKEEPER = 'Goalkeeper';
+    const POSITION_DEFENDER = 'Defender';
+    const POSITION_MIDFIELDER = 'Midfielder';
+    const POSITION_FORWARD = 'Forward';
+
     /**
      * {@inheritdoc}
      */
@@ -48,6 +53,16 @@ class Player extends ActiveRecord
             [['height', 'weight'], 'number'],
             [['name', 'nationality'], 'string', 'max' => 255],
             [['position', 'signing'], 'string', 'max' => 50],
+            [
+                'position',
+                'in',
+                'range' => [
+                    self::POSITION_DEFENDER,
+                    self::POSITION_FORWARD,
+                    self::POSITION_GOALKEEPER,
+                    self::POSITION_MIDFIELDER
+                ]
+            ],
             [['date_of_birth', 'date_of_signing'], 'date', 'format' => 'yyyy-MM-dd\'T\'HH:mm:ssxxx'],
 
             [['name', 'player_number'], 'required']
