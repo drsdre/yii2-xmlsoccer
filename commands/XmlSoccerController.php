@@ -190,7 +190,7 @@ class XmlSoccerController extends Controller
      */
     public function actionCreateLeague($league_id, $seasonDateString = null)
     {
-        $league = call_user_func([$this->leagueClass, 'find'], $league_id);
+        $league = call_user_func([$this->leagueClass, 'findOne'], $league_id);
         /* @var $league \drsdre\yii\xmlsoccer\models\League */
         if (empty($seasonDateString)) {
             $year = intval(date('y'));
