@@ -156,10 +156,21 @@ class XmlSoccerController extends Controller
         }
 
         $first = $leagues->one();
+        $headers = [];
+        $rows = [];
+        $attributes = [];
+
+        foreach ($first->toArray() as $attribute => $value) {
+            $attributes[] = $attribute;
+            $headers[] = $first->generateAttributeLabel($attribute);
+        }
+        foreach ($leagues->all() as $league) {
+            $rows[] = array_values($league->toArray($attributes));
+        }
 
         echo Table::widget([
-            'headers' => $first->attributeLabels(),
-            'rows' => ArrayHelper::toArray($leagues->all())
+            'headers' => $headers,
+            'rows' => $rows
         ]);
 
         return ExitCode::OK;
