@@ -249,9 +249,9 @@ class XmlSoccerController extends Controller
                 'interface_id' => ArrayHelper::getValue($team, 'Team_Id'),
                 'name' => ArrayHelper::getValue($team, 'Name'),
                 'country' => ArrayHelper::getValue($team, 'Country'),
-                'stadium' => ArrayHelper::getValue($team, 'Stadium'),
-                'home_page_url' => ArrayHelper::getValue($team, 'HomePageURL'),
-                'wiki_link' => ArrayHelper::getValue($team, 'WIKILink'),
+                'stadium' => (string)ArrayHelper::getValue($team, 'Stadium'),
+                'home_page_url' => (string)ArrayHelper::getValue($team, 'HomePageURL'),
+                'wiki_link' => (string)ArrayHelper::getValue($team, 'WIKILink'),
                 'coach' => ArrayHelper::getValue($team, 'Coach') ?: ArrayHelper::getValue($team, 'Manager')
             ]);
             /* @var $dbTeam \drsdre\yii\xmlsoccer\models\Team */
@@ -288,16 +288,19 @@ class XmlSoccerController extends Controller
             $dbPlayer = Yii::createObject([
                 'class' => $this->playerClass,
                 'interface_id' => ArrayHelper::getValue($player, 'Id'),
-                'name' => ArrayHelper::getValue($player, 'Name'),
-                'nationality' => ArrayHelper::getValue($player, 'Nationality'),
-                'position' => ArrayHelper::getValue($player, 'Position'),
+                'name' => (string)ArrayHelper::getValue($player, 'Name'),
+                'nationality' => (string)ArrayHelper::getValue($player, 'Nationality'),
+                'position' => (string)ArrayHelper::getValue($player, 'Position'),
                 'team_id' => ArrayHelper::getValue($teams, [ArrayHelper::getValue($player, 'Team_Id'), 'id']),
                 'loan_to' => ArrayHelper::getValue($teams, [ArrayHelper::getValue($player, 'LoanTo'), 'id']),
                 'player_number' => intval(ArrayHelper::getValue($player, 'PlayerNumber')),
                 'date_of_birth' => ArrayHelper::getValue($player, 'DateOfBirth'),
                 'date_of_signing' => ArrayHelper::getValue($player, 'DateOfSigning'),
-                'signing' => html_entity_decode(ArrayHelper::getValue($player, 'Signing'), ENT_COMPAT | ENT_HTML5,
-                    'utf-8')
+                'signing' => html_entity_decode(
+                    (string)ArrayHelper::getValue($player, 'Signing'),
+                    ENT_COMPAT | ENT_HTML5,
+                    'utf-8'
+                )
             ]);
             /* @var $dbPlayer \drsdre\yii\xmlsoccer\models\Player */
 
@@ -333,7 +336,7 @@ class XmlSoccerController extends Controller
                 'home_team_id' => $homeTeam->id,
                 'away_team_id' => $awayTeam->id,
                 'group_id' => ArrayHelper::getValue($groups, ArrayHelper::getValue($match, 'Group_Id', -100)),
-                'location' => ArrayHelper::getValue($match, 'Location')
+                'location' => (string)ArrayHelper::getValue($match, 'Location')
             ]);
             /* @var $dbMatch \drsdre\yii\xmlsoccer\models\Match */
 
