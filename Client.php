@@ -6,6 +6,7 @@
  * @see http://promo.lviv.ua
  * @author Volodymyr Chukh <vova@promo.lviv.ua>
  * @author Andre Schuurman <andre.schuurman@gmail.com>
+ * @author Simon Karlen <simi.albi@gmail.com>
  * @copyright 2014 Volodymyr Chukh
  * @license MIT License
  */
@@ -125,7 +126,7 @@ class Client extends Component
             } elseif (is_array($this->cache)) {
                 $this->cache = Yii::createObject($this->cache);
             }
-        } elseif (isset(Yii::$app->cache)) {
+        } elseif ($this->cache !== false && isset(Yii::$app->cache)) {
             $this->cache = Yii::$app->cache;
         }
         $this->_client = new \yii\httpclient\Client([
@@ -152,6 +153,14 @@ class Client extends Component
                 ArrayHelper::setValue($this->_client->requestConfig, 'options.bindto', $this->requestIp);
             }
         }
+
+        $result = $this->checkApiKey();
+        if (!is_array($result) || empty($result) || strpos($result[0], 'not accepted') !== false) {
+            throw new InvalidConfigException(
+                "Api Key seems to be invalid: {$result[0]}",
+                Exception::E_API_INVALID_PARAMETER
+            );
+        }
     }
 
     /**
@@ -167,7 +176,7 @@ class Client extends Component
     {
         $mapping = $this->getMethodArguments($methodName);
 
-        $hash = md5($methodName.serialize($params));
+        $hash = md5($methodName . serialize($params));
         if ($this->cache && (false !== ($array = $this->cache->get($hash)))) {
             return $array;
         }
@@ -205,6 +214,7 @@ class Client extends Component
             ->setUrl(ucfirst($methodName))
             ->addData($data)
             ->send();
+        /* @var $response \yii\httpclient\Response */
 
         if ($response->isOk) {
             $data = $response->data;
@@ -214,13 +224,17 @@ class Client extends Component
                 throw new Exception("$methodName: {$data[0]}", Exception::E_API_RATE_LIMIT);
             }
 
+            if (ArrayHelper::isAssociative($data) && count($data) === 1) {
+                $data = array_shift($data);
+            }
+
             if ($this->cache) {
                 $this->cache->set($hash, $data, $this->getFunctionTimeout($methodName));
             }
 
             return $data;
         } else {
-            throw new Exception($response->content);
+            throw new Exception($response->content, Exception::E_API_GENERAL);
         }
     }
 
