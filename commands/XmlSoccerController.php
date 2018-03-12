@@ -293,15 +293,15 @@ class XmlSoccerController extends Controller
                 'class' => $this->playerClass,
                 'interface_id' => ArrayHelper::getValue($player, 'Id'),
                 'name' => ArrayHelper::getValue($player, 'Name'),
-                'nationality' => (($tmp = ArrayHelper::getValue($team, 'Nationality')) && !empty($tmp)) ? $tmp : null,
-                'position' => (($tmp = ArrayHelper::getValue($team, 'Position')) && !empty($tmp)) ? $tmp : null,
+                'nationality' => (($tmp = ArrayHelper::getValue($player, 'Nationality')) && !empty($tmp)) ? $tmp : null,
+                'position' => (($tmp = ArrayHelper::getValue($player, 'Position')) && !empty($tmp)) ? $tmp : null,
                 'team_id' => ArrayHelper::getValue($teams, [ArrayHelper::getValue($player, 'Team_Id'), 'id']),
                 'loan_to' => ArrayHelper::getValue($teams, [ArrayHelper::getValue($player, 'LoanTo'), 'id']),
                 'player_number' => intval(ArrayHelper::getValue($player, 'PlayerNumber')),
                 'date_of_birth' => ArrayHelper::getValue($player, 'DateOfBirth'),
                 'date_of_signing' => ArrayHelper::getValue($player, 'DateOfSigning'),
                 'signing' => html_entity_decode(
-                    (string)(($tmp = ArrayHelper::getValue($team, 'Signing')) && !empty($tmp)) ? $tmp : null,
+                    (string)(($tmp = ArrayHelper::getValue($player, 'Signing')) && !empty($tmp)) ? $tmp : null,
                     ENT_COMPAT | ENT_HTML5,
                     'utf-8'
                 )
@@ -339,8 +339,8 @@ class XmlSoccerController extends Controller
                 'round' => ArrayHelper::getValue($match, 'Round'),
                 'home_team_id' => $homeTeam->id,
                 'away_team_id' => $awayTeam->id,
-                'group_id' => ArrayHelper::getValue($groups, ArrayHelper::getValue($match, 'Group_Id', -100)),
-                'location' => (($tmp = ArrayHelper::getValue($team, 'Location')) && !empty($tmp)) ? $tmp : null
+                'group_id' => ArrayHelper::getValue($groups, [ArrayHelper::getValue($match, 'Group_Id'), 'id']),
+                'location' => (($tmp = ArrayHelper::getValue($match, 'Location')) && !empty($tmp)) ? $tmp : null
             ]);
             /* @var $dbMatch \drsdre\yii\xmlsoccer\models\Match */
 
