@@ -48,7 +48,7 @@ class Player extends ActiveRecord
             [['height', 'weight'], 'number'],
             [['name', 'nationality'], 'string', 'max' => 255],
             [['position', 'signing'], 'string', 'max' => 50],
-            [['date_of_birth', 'date_of_signing'], 'date'],
+            [['date_of_birth', 'date_of_signing'], 'date', 'format' => 'yyyy-MM-dd\'T\'HH:mm:ssxxx'],
 
             [['name', 'player_number'], 'required']
         ];

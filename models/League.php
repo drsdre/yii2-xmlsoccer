@@ -48,7 +48,7 @@ class League extends ActiveRecord
             [['id', 'interface_id', 'number_of_matches'], 'integer'],
             [['name', 'country'], 'string', 'max' => 255],
             [['fixtures', 'livescore', 'is_cup'], 'boolean'],
-            [['latest_match'], 'datetime'],
+            [['latest_match'], 'datetime', 'format' => 'yyyy-MM-dd\'T\'HH:mm:ssxxx'],
             [
                 'historical_data',
                 'in',

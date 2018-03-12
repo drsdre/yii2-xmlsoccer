@@ -43,7 +43,7 @@ class Match extends ActiveRecord
     {
         return [
             [['id', 'interface_id', 'league_id', 'home_team_id', 'away_team_id', 'group_id', 'round'], 'integer'],
-            ['date', 'date'],
+            ['date', 'datetime', 'format' => 'yyyy-MM-dd\'T\'HH:mm:ssxxx'],
             ['location', 'string', 'max' => 255],
 
             [['date', 'league_id', 'round', 'home_team_id', 'away_team_id'], 'required']
