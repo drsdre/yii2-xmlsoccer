@@ -272,7 +272,11 @@ class XmlSoccerController extends Controller
                 $this->stdout("Team '{$dbTeam->name}' saved", Console::FG_GREEN);
                 $this->stdout("\n");
 
-                $players = array_merge($players, $client->getPlayersByTeam(ArrayHelper::getValue($team, 'Team_Id')));
+                $teamPlayers = $client->getPlayersByTeam(ArrayHelper::getValue($team, 'Team_Id'));
+                if (ArrayHelper::isAssociative($teamPlayers) && ArrayHelper::keyExists('Name', $teamPlayers)) {
+                    $teamPlayers = [$teamPlayers];
+                }
+                $players = array_merge($players, $teamPlayers);
             }
         }
 
