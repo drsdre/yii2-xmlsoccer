@@ -58,7 +58,7 @@ class XmlSoccerController extends Controller
      * Import all leagues from XMLSoccer interface
      * @return integer Exit code
      */
-    public function importLeagues()
+    public function actionImportLeagues()
     {
         $client = new Client([
             'apiKey' => $this->apiKey
@@ -120,7 +120,7 @@ class XmlSoccerController extends Controller
      * @return integer Exit code
      * @throws \Exception
      */
-    public function showLeagues()
+    public function actionShowLeagues()
     {
         $leagues = League::find();
 
@@ -147,12 +147,12 @@ class XmlSoccerController extends Controller
      * ```sh
      * $ ./yii xml-soccer/show-leagues
      * ```
-     *      *
+     *
      * @param integer $league_id League id to import all data from
      * @param string|null $seasonDateString Season date string to import data from. Defaults to current season.
      * @return int Exit code
      */
-    public function createLeague($league_id, $seasonDateString = null)
+    public function actionCreateLeague($league_id, $seasonDateString = null)
     {
         $league = League::findOne($league_id);
         if (empty($seasonDateString)) {
@@ -392,8 +392,10 @@ class XmlSoccerController extends Controller
 
     /**
      * Update Scores from LiveScore
+     *
+     * @return integer Exit code
      */
-    public function updateScore()
+    public function actionUpdateScore()
     {
         $client = new Client([
             'apiKey' => $this->apiKey
