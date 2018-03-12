@@ -40,6 +40,11 @@ class XmlSoccerController extends Controller
     /**
      * {@inheritdoc}
      */
+    public $defaultAction = 'show-leagues';
+
+    /**
+     * {@inheritdoc}
+     */
     public function options($actionID)
     {
         $options = parent::options($actionID);
