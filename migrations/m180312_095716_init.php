@@ -39,7 +39,8 @@ class m180312_095716_init extends Migration
             'interface_id' => $this->integer(10)->unsigned()->null()->defaultValue(null)->comment('XMLSOCCER id'),
             'name' => $this->string(255)->notNull(),
             'season' => $this->char(4)->notNull(),
-            'league_id' => $this->integer(10)->unsigned()->notNull()
+            'league_id' => $this->integer(10)->unsigned()->notNull(),
+            'is_knockout_stage' => $this->boolean()->notNull()->defaultValue(false)
         ]);
         $this->createTable('{{%league}}', [
             'id' => $this->primaryKey(10)->unsigned(),

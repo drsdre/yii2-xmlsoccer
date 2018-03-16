@@ -24,6 +24,7 @@ use yii\db\ActiveRecord;
  * @property string $name
  * @property string $season
  * @property integer $league_id
+ * @property boolean $is_knockout_stage
  *
  * @property-read League $league
  * @property-read Match[] $getMatches
@@ -39,8 +40,10 @@ class Group extends ActiveRecord
             [['id', 'interface_id', 'league_id'], 'integer'],
             ['name', 'string', 'max' => 255],
             ['season', 'string', 'length' => 4],
+            ['is_knockout_stage', 'boolean'],
+            ['is_knockout_stage', 'default', 'value' => false],
 
-            [['name', 'season', 'league_id'], 'required']
+            [['name', 'season', 'league_id', 'is_knockout_stage'], 'required']
         ];
     }
 

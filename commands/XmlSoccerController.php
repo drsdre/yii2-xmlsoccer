@@ -219,7 +219,8 @@ class XmlSoccerController extends Controller
                     'interface_id' => ArrayHelper::getValue($group, 'Id'),
                     'name' => ArrayHelper::getValue($group, 'Name'),
                     'season' => ArrayHelper::getValue($group, 'Season'),
-                    'league_id' => $league->id
+                    'league_id' => $league->id,
+                    'is_knockout_stage' => (false !== strpos(strtolower(ArrayHelper::getValue($group, 'Name')), 'finals'))
                 ]);
                 /* @var $dbGroup \drsdre\yii\xmlsoccer\models\Group */
 
