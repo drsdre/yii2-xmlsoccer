@@ -20,6 +20,7 @@ use yii\db\ActiveRecord;
  * @package drsdre\yii\xmlsoccer\models
  *
  * @property integer $id
+ * @property integer $team_id
  * @property integer $player_id
  * @property integer $match_id
  * @property integer $minute
@@ -38,10 +39,10 @@ class Goal extends ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'player_id', 'match_id'], 'integer'],
+            [['id', 'team_id', 'player_id', 'match_id'], 'integer'],
             ['minute', 'integer', 'min' => 1, 'max' => 255],
 
-            [['player_id', 'match_id', 'minute'], 'required']
+            [['team_id', 'match_id', 'minute'], 'required']
         ];
     }
 
@@ -69,7 +70,6 @@ class Goal extends ActiveRecord
      */
     public function getTeam()
     {
-        return $this->hasOne(Team::class, ['id' => 'team_id'])
-            ->via('player');
+        return $this->hasOne(Team::class, ['id' => 'team_id']);
     }
 }
