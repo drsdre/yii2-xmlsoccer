@@ -365,9 +365,13 @@ class XmlSoccerController extends Controller
                 $this->stdout("\n");
 
                 if (ArrayHelper::keyExists('HomeGoalDetails', $match)) {
-                    $homeGoals = explode(';', ArrayHelper::getValue($match, 'HomeGoalDetails', ''));
+                    $homeGoals = is_string($tmp = ArrayHelper::getValue($match, 'HomeGoalDetails', ''))
+                        ? explode(';', $tmp)
+                        : $tmp;
                     $homePlayers = $homeTeam->getPlayers()->indexBy('name')->all();
-                    $awayGoals = explode(';', ArrayHelper::getValue($match, 'AwayGoalDetails', ''));
+                    $awayGoals = is_string($tmp = ArrayHelper::getValue($match, 'AwayGoalDetails', ''))
+                        ? explode(';', $tmp)
+                        : $tmp;
                     $awayPlayers = $awayTeam->getPlayers()->indexBy('name')->all();
 
                     foreach ($homeGoals as $homeGoal) {
@@ -492,9 +496,13 @@ class XmlSoccerController extends Controller
             /* @var $awayTeam \drsdre\yii\xmlsoccer\models\Team */
 
             if (ArrayHelper::keyExists('HomeGoalDetails', $match)) {
-                $homeGoals = explode(';', ArrayHelper::getValue($match, 'HomeGoalDetails', ''));
+                $homeGoals = is_string($tmp = ArrayHelper::getValue($match, 'HomeGoalDetails', ''))
+                    ? explode(';', $tmp)
+                    : $tmp;
                 $homePlayers = $homeTeam->getPlayers()->indexBy('name')->all();
-                $awayGoals = explode(';', ArrayHelper::getValue($match, 'AwayGoalDetails', ''));
+                $awayGoals = is_string($tmp = ArrayHelper::getValue($match, 'AwayGoalDetails', ''))
+                    ? explode(';', $tmp)
+                    : $tmp;
                 $awayPlayers = $awayTeam->getPlayers()->indexBy('name')->all();
 
                 foreach ($homeGoals as $homeGoal) {
