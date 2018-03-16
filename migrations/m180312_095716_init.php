@@ -60,7 +60,7 @@ class m180312_095716_init extends Migration
             'interface_id' => $this->integer(10)->unsigned()->null()->defaultValue(null)->comment('XMLSOCCER id'),
             'date' => $this->integer(10)->unsigned()->notNull(),
             'league_id' => $this->integer(10)->unsigned()->notNull(),
-            'round' => $this->tinyInteger(3)->unsigned()->notNull(),
+            'round' => $this->tinyInteger(3)->unsigned()->null()->defaultValue(null),
             'home_team_id' => $this->integer(10)->unsigned()->notNull(),
             'away_team_id' => $this->integer(10)->unsigned()->notNull(),
             'group_id' => $this->integer(10)->unsigned()->null()->defaultValue(null),

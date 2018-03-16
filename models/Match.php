@@ -46,7 +46,7 @@ class Match extends ActiveRecord
             ['date', 'datetime', 'format' => 'yyyy-MM-dd\'T\'HH:mm:ssxxx'],
             ['location', 'string', 'max' => 255],
 
-            [['date', 'league_id', 'round', 'home_team_id', 'away_team_id'], 'required']
+            [['date', 'league_id', 'home_team_id', 'away_team_id'], 'required']
         ];
     }
 
