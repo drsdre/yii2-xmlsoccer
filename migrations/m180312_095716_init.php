@@ -28,7 +28,8 @@ class m180312_095716_init extends Migration
     {
         $this->createTable('{{%goal}}', [
             'id' => $this->primaryKey(10)->unsigned(),
-            'player_id' => $this->integer(10)->unsigned()->notNull(),
+            'team_id' => $this->integer(10)->unsigned()->notNull(),
+            'player_id' => $this->integer(10)->unsigned()->null()->defaultValue(null),
             'match_id' => $this->integer(10)->unsigned()->notNull(),
             'minute' => $this->tinyInteger(3)->unsigned()->notNull(),
             'owngoal' => $this->boolean()->notNull()->defaultValue(false),
@@ -109,6 +110,15 @@ class m180312_095716_init extends Migration
         );
         $this->addForeignKey(
             '{{%goal_ibfk_2}}',
+            '{{%goal}}',
+            'team_id',
+            '{{%team}}',
+            'id',
+            'SET NULL',
+            'CASCADE'
+        );
+        $this->addForeignKey(
+            '{{%goal_ibfk_3}}',
             '{{%goal}}',
             'player_id',
             '{{%player}}',

@@ -220,7 +220,10 @@ class XmlSoccerController extends Controller
                     'name' => ArrayHelper::getValue($group, 'Name'),
                     'season' => ArrayHelper::getValue($group, 'Season'),
                     'league_id' => $league->id,
-                    'is_knockout_stage' => (false !== strpos(strtolower(ArrayHelper::getValue($group, 'Name')), 'finals'))
+                    'is_knockout_stage' => (false !== strpos(
+                            strtolower(ArrayHelper::getValue($group, 'Name')),
+                            'finals')
+                    )
                 ]);
                 /* @var $dbGroup \drsdre\yii\xmlsoccer\models\Group */
 
@@ -383,6 +386,7 @@ class XmlSoccerController extends Controller
                             'class' => $this->goalClass,
                             'match_id' => $dbMatch->id,
                             'minute' => $minute,
+                            'team_id' => $homeTeam->id,
                             'player_id' => ArrayHelper::getValue(
                                 ($isOwn ? $awayPlayers : $homePlayers),
                                 [$player, 'id']
@@ -422,6 +426,7 @@ class XmlSoccerController extends Controller
                             'class' => $this->goalClass,
                             'match_id' => $dbMatch->id,
                             'minute' => $minute,
+                            'team_id' => $awayTeam->id,
                             'player_id' => ArrayHelper::getValue(
                                 ($isOwn ? $homePlayers : $awayPlayers),
                                 [$player, 'id']
@@ -519,6 +524,7 @@ class XmlSoccerController extends Controller
                         'class' => $this->goalClass,
                         'match_id' => $dbMatch->id,
                         'minute' => $minute,
+                        'team_id' => $homeTeam->id,
                         'player_id' => ArrayHelper::getValue(
                             ($isOwn ? $awayPlayers : $homePlayers),
                             [$player, 'id']
@@ -557,6 +563,7 @@ class XmlSoccerController extends Controller
                         'class' => $this->goalClass,
                         'match_id' => $dbMatch->id,
                         'minute' => $minute,
+                        'team_id' => $awayTeam->id,
                         'player_id' => ArrayHelper::getValue(
                             ($isOwn ? $homePlayers : $awayPlayers),
                             [$player, 'id']
