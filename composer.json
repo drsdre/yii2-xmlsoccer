@@ -1,7 +1,15 @@
 {
   "name": "drsdre/yii2-xmlsoccer",
   "description": "Yii2 Extension for XMLSoccer.com API access",
-  "keywords": ["yii2", "extension", "soap", "consumer", "API", "XMLSoccer.com", "live football scores"],
+  "keywords": [
+    "yii2",
+    "extension",
+    "soap",
+    "consumer",
+    "API",
+    "XMLSoccer.com",
+    "live football scores"
+  ],
   "homepage": "https://github.com/drsdre/yii2-xmlsoccer",
   "type": "yii2-extension",
   "license": "BSD-3-Clause",
@@ -18,18 +26,23 @@
     {
       "name": "Volodymyr Chukh",
       "email": "vova@promo.lviv.ua"
+    },
+    {
+      "name": "Simon Karlen",
+      "email": "simi.albi@gmail.com"
     }
-
   ],
   "require": {
-    "php": ">=5.4.0",
-    "lib-curl": "*",
-    "ext-simplexml": "*",
-    "yiisoft/yii2": "*"
+    "php": ">=5.5.0",
+    "yiisoft/yii2": "~2.0",
+    "yiisoft/yii2-httpclient": "~2.0"
+  },
+  "require-dev": {
+    "yiisoft/yii2-coding-standards": "~2.0"
   },
   "autoload": {
     "psr-4": {
-      "XMLSoccer\\": ""
+      "drsdre\\yii\\xmlsoccer\\": ""
     }
   }
 }
