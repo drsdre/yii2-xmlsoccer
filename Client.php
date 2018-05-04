@@ -24,35 +24,35 @@ use Yii;
  * @package drsdre\yii\xmlsoccer
  *
  * @method array checkApiKey()
- * @method array getAllGroupsByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getAllGroupsByLeagueAndSeason(integer $league, string $seasonDateString)
  * @method array getAllLeagues()
  * @method array getAllOddsByFixtureMatchId(integer $fixtureMatch_Id)
  * @method array getAllTeams()
- * @method array getAllTeamsByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getAllTeamsByLeagueAndSeason(integer $league, string $seasonDateString)
  * @method array getCupStandingsByGroupId(integer $group_Id)
- * @method array getEarliestMatchDatePerLeague(string $league)
+ * @method array getEarliestMatchDatePerLeague(integer $league)
  * @method array getFixtureMatchByID(integer $Id)
  * @method array getFixturesByDateInterval(string $startDateString, string $endDateString)
- * @method array getFixturesByDateIntervalAndLeague(string $startDateString, string $endDateString, string $league)
- * @method array getFixturesByDateIntervalAndTeam(string $startDateString, string $endDateString, string $teamId)
- * @method array getFixturesByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getFixturesByDateIntervalAndLeague(string $startDateString, string $endDateString, integer $league)
+ * @method array getFixturesByDateIntervalAndTeam(string $startDateString, string $endDateString, integer $teamId)
+ * @method array getFixturesByLeagueAndSeason(integer $league, string $seasonDateString)
  * @method array getHistoricMatchesByFixtureMatchID(integer $Id)
  * @method array getHistoricMatchesByID(integer $Id)
- * @method array getHistoricMatchesByLeagueAndDateInterval(string $startDateString, string $endDateString, string $league)
- * @method array getHistoricMatchesByLeagueAndSeason(string $league, string $seasonDateString)
- * @method array getHistoricMatchesByTeamAndDateInterval(string $startDateString, string $endDateString, string $teamId)
- * @method array getLeagueStandingsBySeason(string $league, string $seasonDateString)
+ * @method array getHistoricMatchesByLeagueAndDateInterval(string $startDateString, string $endDateString, integer $league)
+ * @method array getHistoricMatchesByLeagueAndSeason(integer $league, string $seasonDateString)
+ * @method array getHistoricMatchesByTeamAndDateInterval(string $startDateString, string $endDateString, integer $teamId)
+ * @method array getLeagueStandingsBySeason(integer $league, string $seasonDateString)
  * @method array getLiveScore()
- * @method array getNextMatchOddsByLeague(string $league)
- * @method array getOddsByFixtureMatchId(string $fixtureMatch_Id)
- * @method array getOddsByFixtureMatchId2(string $fixtureMatch_Id)
+ * @method array getNextMatchOddsByLeague(integer $league)
+ * @method array getOddsByFixtureMatchId(integer $fixtureMatch_Id)
+ * @method array getOddsByFixtureMatchId2(integer $fixtureMatch_Id)
  * @method array getPlayerById(integer $playerId)
- * @method array getPlayersByTeam(string $teamId)
- * @method array getPlayoffFixturesByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getPlayersByTeam(integer $teamId)
+ * @method array getPlayoffFixturesByLeagueAndSeason(integer $league, string $seasonDateString)
  * @method array getRescheduleOfMatchDatesByFixtureMatchId(integer $Id)
  * @method array getTeam(string $teamName)
  * @method array getTopScorersByGroupId(integer $groupId)
- * @method array getTopScorersByLeagueAndSeason(string $league, string $seasonDateString)
+ * @method array getTopScorersByLeagueAndSeason(integer $league, string $seasonDateString)
  * @method array imAlive()
  * @method array isMyApiKeyPutOnSpammersList()
  */
@@ -247,17 +247,9 @@ class Client extends Component
      */
     protected function getFunctionTimeout($functionName)
     {
-        switch ($functionName) {
-            case "GetLiveScore":
-            case "GetLiveScoreByLeague":
-            case "GetOddsByFixtureMatchID":
-            case "GetHistoricMatchesByLeagueAndSeason":
-            case "GetAllTeams":
-            case "GetAllTeamsByLeagueAndSeason":
-                return constant("self::TIMEOUT_" . strtoupper($functionName));
-            default:
-                return self::TIMEOUT_OTHERS;
-        }
+        return (defined('self::TIMEOUT_' . strtoupper($functionName)))
+            ? constant('self::TIMEOUT_' . strtoupper($functionName))
+            : self::TIMEOUT_OTHERS;
     }
 
     /**

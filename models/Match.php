@@ -102,7 +102,7 @@ class Match extends ActiveRecord
     public function afterFind()
     {
         if (\Yii::$app->has('formatter')) {
-            $this->date = \Yii::$app->formatter->asDatetime($this->date);
+            $this->date = \Yii::$app->formatter->asDatetime($this->date, 'yyyy-MM-dd\'T\'HH:mm:ssxxx');
         }
         return parent::afterFind();
     }
