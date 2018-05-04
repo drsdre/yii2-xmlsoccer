@@ -214,7 +214,9 @@ class XmlSoccerController extends Controller
             $groups = $client->getAllGroupsByLeagueAndSeason($league->interface_id, $seasonDateString);
 
             foreach ($groups as $group) {
-                $dbGroup = Yii::createObject([
+                $dbGroup = call_user_func([$this->groupClass, 'findOne'], [
+                    'interface_id' => ArrayHelper::getValue($group, 'Id')
+                ]) ?: Yii::createObject([
                     'class' => $this->groupClass,
                     'interface_id' => ArrayHelper::getValue($group, 'Id'),
                     'name' => ArrayHelper::getValue($group, 'Name'),
@@ -248,7 +250,9 @@ class XmlSoccerController extends Controller
 
         $players = [];
         foreach ($teams as $team) {
-            $dbTeam = Yii::createObject([
+            $dbTeam = call_user_func([$this->teamClass, 'findOne'], [
+                'interface_id' => ArrayHelper::getValue($team, 'Team_Id')
+            ]) ?: Yii::createObject([
                 'class' => $this->teamClass,
                 'interface_id' => ArrayHelper::getValue($team, 'Team_Id'),
                 'name' => ArrayHelper::getValue($team, 'Name'),
@@ -293,7 +297,9 @@ class XmlSoccerController extends Controller
         /* @var $teams \drsdre\yii\xmlsoccer\models\Team[] */
 
         foreach ($players as $player) {
-            $dbPlayer = Yii::createObject([
+            $dbPlayer = call_user_func([$this->playerClass, 'findOne'], [
+                'interface_id' => ArrayHelper::getValue($player, 'Id')
+            ]) ?: Yii::createObject([
                 'class' => $this->playerClass,
                 'interface_id' => ArrayHelper::getValue($player, 'Id'),
                 'name' => ArrayHelper::getValue($player, 'Name'),
@@ -335,7 +341,9 @@ class XmlSoccerController extends Controller
             $awayTeam = ArrayHelper::getValue($teams, ArrayHelper::getValue($match, 'AwayTeam_Id'));
             /* @var $homeTeam \drsdre\yii\xmlsoccer\models\Team */
             /* @var $awayTeam \drsdre\yii\xmlsoccer\models\Team */
-            $dbMatch = Yii::createObject([
+            $dbMatch = call_user_func([$this->matchClass, 'findOne'], [
+                'interface_id' => ArrayHelper::getValue($match, 'Id')
+            ]) ?: Yii::createObject([
                 'class' => $this->matchClass,
                 'interface_id' => ArrayHelper::getValue($match, 'Id'),
                 'date' => ArrayHelper::getValue($match, 'Date'),
@@ -386,7 +394,11 @@ class XmlSoccerController extends Controller
                         }
                         $minute = rtrim($minute, '\'');
 
-                        $dbGoal = Yii::createObject([
+                        $dbGoal = call_user_func([$this->goalClass, 'findOne'], [
+                            'match_id' => $dbMatch->id,
+                            'minute' => $minute,
+                            'team_id' => $homeTeam->id
+                        ]) ?: Yii::createObject([
                             'class' => $this->goalClass,
                             'match_id' => $dbMatch->id,
                             'minute' => $minute,
@@ -426,7 +438,11 @@ class XmlSoccerController extends Controller
                         }
                         $minute = rtrim($minute, '\'');
 
-                        $dbGoal = Yii::createObject([
+                        $dbGoal = call_user_func([$this->goalClass, 'findOne'], [
+                            'match_id' => $dbMatch->id,
+                            'minute' => $minute,
+                            'team_id' => $awayTeam->id
+                        ]) ?: Yii::createObject([
                             'class' => $this->goalClass,
                             'match_id' => $dbMatch->id,
                             'minute' => $minute,
@@ -519,7 +535,8 @@ class XmlSoccerController extends Controller
 
                     $dbGoal = call_user_func([$this->goalClass, 'findOne'], [
                         'match_id' => $dbMatch->id,
-                        'minute' => $minute
+                        'minute' => $minute,
+                        'team_id' => $homeTeam->id,
                     ]);
                     /* @var $dbGoal \drsdre\yii\xmlsoccer\models\Goal */
 
@@ -566,6 +583,18 @@ class XmlSoccerController extends Controller
                         $player = ltrim(substr($player, 4));
                     }
                     $minute = rtrim($minute, '\'');
+
+                    $dbGoal = call_user_func([$this->goalClass, 'findOne'], [
+                        'match_id' => $dbMatch->id,
+                        'minute' => $minute,
+                        'team_id' => $awayTeam->id,
+                    ]);
+                    /* @var $dbGoal \drsdre\yii\xmlsoccer\models\Goal */
+
+                    if ($dbGoal) {
+                        $this->stdout("Goal '$minute' already exists. Continue...\n");
+                        continue;
+                    }
 
                     $dbGoal = Yii::createObject([
                         'class' => $this->goalClass,
