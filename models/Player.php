@@ -105,10 +105,10 @@ class Player extends ActiveRecord
     {
         if (\Yii::$app->has('formatter')) {
             if (!empty($this->date_of_birth)) {
-                $this->date_of_birth = \Yii::$app->formatter->asDate($this->date_of_birth);
+                $this->date_of_birth = \Yii::$app->formatter->asDate($this->date_of_birth, 'yyyy-MM-dd\'T\'HH:mm:ssxxx');
             }
             if (!empty($this->date_of_signing)) {
-                $this->date_of_signing = \Yii::$app->formatter->asDate($this->date_of_signing);
+                $this->date_of_signing = \Yii::$app->formatter->asDate($this->date_of_signing, 'yyyy-MM-dd\'T\'HH:mm:ssxxx');
             }
         }
         return parent::afterFind();

@@ -88,8 +88,13 @@ class XmlSoccerController extends Controller
         $leagues = $client->getAllLeagues();
         $count = 0;
         foreach ($leagues as $league) {
-            $dbLeague = Yii::createObject([
-                'class' => $this->leagueClass,
+            $dbLeague = call_user_func([$this->leagueClass, 'findOne'], [
+                'interface_id' => ArrayHelper::getValue($league, 'Id')
+            ]) ?: Yii::createObject([
+                'class' => $this->leagueClass
+            ]);
+            /* @var $dbLeague \drsdre\yii\xmlsoccer\models\League */
+            Yii::configure($dbLeague, [
                 'interface_id' => ArrayHelper::getValue($league, 'Id'),
                 'name' => ArrayHelper::getValue($league, 'Name'),
                 'country' => ArrayHelper::getValue($league, 'Country'),
@@ -112,7 +117,6 @@ class XmlSoccerController extends Controller
                     FILTER_VALIDATE_BOOLEAN
                 )
             ]);
-            /* @var $dbLeague \drsdre\yii\xmlsoccer\models\League */
 
             if (!$dbLeague->save()) {
                 $this->stderr("Failed to import league '{$dbLeague->name}': ", Console::FG_RED);
@@ -217,7 +221,11 @@ class XmlSoccerController extends Controller
                 $dbGroup = call_user_func([$this->groupClass, 'findOne'], [
                     'interface_id' => ArrayHelper::getValue($group, 'Id')
                 ]) ?: Yii::createObject([
-                    'class' => $this->groupClass,
+                    'class' => $this->groupClass
+                ]);
+                /* @var $dbGroup \drsdre\yii\xmlsoccer\models\Group */
+
+                Yii::configure($dbGroup, [
                     'interface_id' => ArrayHelper::getValue($group, 'Id'),
                     'name' => ArrayHelper::getValue($group, 'Name'),
                     'season' => ArrayHelper::getValue($group, 'Season'),
@@ -227,7 +235,6 @@ class XmlSoccerController extends Controller
                             'finals')
                     )
                 ]);
-                /* @var $dbGroup \drsdre\yii\xmlsoccer\models\Group */
 
                 if (!$dbGroup->save()) {
                     $this->stderr("Failed to save group '{$dbGroup->name}': ", Console::FG_RED);
@@ -253,7 +260,11 @@ class XmlSoccerController extends Controller
             $dbTeam = call_user_func([$this->teamClass, 'findOne'], [
                 'interface_id' => ArrayHelper::getValue($team, 'Team_Id')
             ]) ?: Yii::createObject([
-                'class' => $this->teamClass,
+                'class' => $this->teamClass
+            ]);
+            /* @var $dbTeam \drsdre\yii\xmlsoccer\models\Team */
+
+            Yii::configure($dbTeam, [
                 'interface_id' => ArrayHelper::getValue($team, 'Team_Id'),
                 'name' => ArrayHelper::getValue($team, 'Name'),
                 'country' => ArrayHelper::getValue($team, 'Country'),
@@ -262,7 +273,6 @@ class XmlSoccerController extends Controller
                 'wiki_link' => (($tmp = ArrayHelper::getValue($team, 'WIKILink')) && !empty($tmp)) ? $tmp : null,
                 'coach' => ArrayHelper::getValue($team, 'Coach') ?: ArrayHelper::getValue($team, 'Manager')
             ]);
-            /* @var $dbTeam \drsdre\yii\xmlsoccer\models\Team */
 
             if (!$dbTeam->save()) {
                 $this->stderr("Failed to save team '{$dbTeam->name}': ", Console::FG_RED);
@@ -300,7 +310,11 @@ class XmlSoccerController extends Controller
             $dbPlayer = call_user_func([$this->playerClass, 'findOne'], [
                 'interface_id' => ArrayHelper::getValue($player, 'Id')
             ]) ?: Yii::createObject([
-                'class' => $this->playerClass,
+                'class' => $this->playerClass
+            ]);
+            /* @var $dbPlayer \drsdre\yii\xmlsoccer\models\Player */
+
+            Yii::configure($dbPlayer, [
                 'interface_id' => ArrayHelper::getValue($player, 'Id'),
                 'name' => ArrayHelper::getValue($player, 'Name'),
                 'nationality' => (($tmp = ArrayHelper::getValue($player, 'Nationality')) && !empty($tmp)) ? $tmp : null,
@@ -316,7 +330,6 @@ class XmlSoccerController extends Controller
                     'utf-8'
                 )
             ]);
-            /* @var $dbPlayer \drsdre\yii\xmlsoccer\models\Player */
 
             if (!$dbPlayer->save()) {
                 $this->stderr("Failed to save player '{$dbPlayer->name}': ", Console::FG_RED);
@@ -344,7 +357,11 @@ class XmlSoccerController extends Controller
             $dbMatch = call_user_func([$this->matchClass, 'findOne'], [
                 'interface_id' => ArrayHelper::getValue($match, 'Id')
             ]) ?: Yii::createObject([
-                'class' => $this->matchClass,
+                'class' => $this->matchClass
+            ]);
+            /* @var $dbMatch \drsdre\yii\xmlsoccer\models\Match */
+
+            Yii::configure($dbMatch, [
                 'interface_id' => ArrayHelper::getValue($match, 'Id'),
                 'date' => ArrayHelper::getValue($match, 'Date'),
                 'league_id' => $league->id,
@@ -354,7 +371,6 @@ class XmlSoccerController extends Controller
                 'group_id' => ArrayHelper::getValue($groups, [ArrayHelper::getValue($match, 'Group_Id'), 'id']),
                 'location' => (($tmp = ArrayHelper::getValue($match, 'Location')) && !empty($tmp)) ? $tmp : null
             ]);
-            /* @var $dbMatch \drsdre\yii\xmlsoccer\models\Match */
 
             if (!$dbMatch->save()) {
                 $this->stderr("Failed to save match '{$dbMatch->location}-{$dbMatch->date}': ", Console::FG_RED);
@@ -399,7 +415,11 @@ class XmlSoccerController extends Controller
                             'minute' => $minute,
                             'team_id' => $homeTeam->id
                         ]) ?: Yii::createObject([
-                            'class' => $this->goalClass,
+                            'class' => $this->goalClass
+                        ]);
+                        /* @var $dbGoal \drsdre\yii\xmlsoccer\models\Goal */
+
+                        Yii::configure($dbGoal, [
                             'match_id' => $dbMatch->id,
                             'minute' => $minute,
                             'team_id' => $homeTeam->id,
@@ -410,7 +430,7 @@ class XmlSoccerController extends Controller
                             'owngoal' => $isOwn,
                             'penalty' => $isPenalty
                         ]);
-                        /* @var $dbGoal \drsdre\yii\xmlsoccer\models\Goal */
+
                         if (!$dbGoal->save()) {
                             $this->stderr("Failed to save goal '$minute': ", Console::FG_RED);
                             $this->stderr("\n");
@@ -443,7 +463,11 @@ class XmlSoccerController extends Controller
                             'minute' => $minute,
                             'team_id' => $awayTeam->id
                         ]) ?: Yii::createObject([
-                            'class' => $this->goalClass,
+                            'class' => $this->goalClass
+                        ]);
+                        /* @var $dbGoal \drsdre\yii\xmlsoccer\models\Goal */
+
+                        Yii::configure($dbGoal, [
                             'match_id' => $dbMatch->id,
                             'minute' => $minute,
                             'team_id' => $awayTeam->id,
@@ -454,7 +478,7 @@ class XmlSoccerController extends Controller
                             'owngoal' => $isOwn,
                             'penalty' => $isPenalty
                         ]);
-                        /* @var $dbGoal \drsdre\yii\xmlsoccer\models\Goal */
+
                         if (!$dbGoal->save()) {
                             $this->stderr("Failed to save goal '$minute': ", Console::FG_RED);
                             $this->stderr("\n");
